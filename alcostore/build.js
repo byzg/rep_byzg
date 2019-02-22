@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { transform, transformFile } = require('@babel/core');
 
 !fs.existsSync('dist') && fs.mkdirSync('dist');
 
@@ -30,4 +31,7 @@ fs.readdir(PATH.src('pages'), function (err, files) {
   fs.writeFile(PATH.dist('index.html'), htmlContent, defaultCallback);
 });
 fs.copyFile(PATH.src('stylesheets.css'), PATH.dist('stylesheets.css'), defaultCallback);
-fs.copyFile(PATH.src('scripts.js'), PATH.dist('scripts.js'), defaultCallback);
+
+transformFile('./src/scripts.js', { presets: ['@babel/preset-env'] }, (err, result)=> {
+  fs.writeFile(PATH.dist('bundle.js'), result.code, defaultCallback);
+});
